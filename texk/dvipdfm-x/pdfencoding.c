@@ -40,7 +40,7 @@
 
 static int      is_similar_charset (char **encoding, const char **encoding2);
 static pdf_obj *make_encoding_differences (char **encoding, char **baseenc,
-					   const char *is_used);
+                                           const char *is_used);
 
 static unsigned char verbose = 0;
 
@@ -88,10 +88,10 @@ typedef struct pdf_encoding
 } pdf_encoding;
 
 static int      pdf_encoding_new_encoding (const char *enc_name,
-					   const char *ident,
-					   const char **encoding_vec,
-					   const char *baseenc_name,
-					   int flags);
+                                           const char *ident,
+                                           const char **encoding_vec,
+                                           const char *baseenc_name,
+                                           int flags);
 
 static void
 pdf_init_encoding_struct (pdf_encoding *encoding)
@@ -126,14 +126,14 @@ create_encoding_resource (pdf_encoding *encoding, pdf_encoding *baseenc)
   ASSERT(!encoding->resource);
 
   differences = make_encoding_differences(encoding->glyphs,
-					  baseenc ? baseenc->glyphs : NULL,
-					  encoding->is_used);
+                                          baseenc ? baseenc->glyphs : NULL,
+                                          encoding->is_used);
   
   if (differences) {
     pdf_obj *resource = pdf_new_dict();
     if (baseenc)
       pdf_add_dict(resource, pdf_new_name("BaseEncoding"),
-		   pdf_link_obj(baseenc->resource));
+                   pdf_link_obj(baseenc->resource));
     pdf_add_dict(resource, pdf_new_name("Differences"),  differences);
     return resource; 
   } else {
@@ -220,7 +220,7 @@ is_similar_charset (char **enc_vec, const char **enc_vec2)
 
   for (code = 0; code < 256; code++)
     if (!(enc_vec[code] && strcmp(enc_vec[code], enc_vec2[code]))
-	&& ++same >= 64)
+        && ++same >= 64)
       /* is 64 a good level? */
       return 1;
 
@@ -337,7 +337,7 @@ load_encoding_file (const char *filename)
     enc_vec[code] = pdf_name_value(pdf_get_array(encoding_array, code));
   }
   enc_id = pdf_encoding_new_encoding(enc_name ? pdf_name_value(enc_name) : NULL,
-				     filename, enc_vec, NULL, 0);
+                                     filename, enc_vec, NULL, 0);
 
   if (enc_name) {
     if (verbose > 1)
@@ -378,11 +378,11 @@ pdf_init_encodings (void)
    * PDF Predefined Encodings
    */
   pdf_encoding_new_encoding("WinAnsiEncoding", "WinAnsiEncoding",
-			    WinAnsiEncoding, NULL, FLAG_IS_PREDEFINED);
+                            WinAnsiEncoding, NULL, FLAG_IS_PREDEFINED);
   pdf_encoding_new_encoding("MacRomanEncoding", "MacRomanEncoding",
-			    MacRomanEncoding, NULL, FLAG_IS_PREDEFINED);
+                            MacRomanEncoding, NULL, FLAG_IS_PREDEFINED);
   pdf_encoding_new_encoding("MacExpertEncoding", "MacExpertEncoding",
-			    MacExpertEncoding, NULL, FLAG_IS_PREDEFINED);
+                            MacExpertEncoding, NULL, FLAG_IS_PREDEFINED);
 
   return;
 }
@@ -402,8 +402,8 @@ pdf_init_encodings (void)
 
 static int
 pdf_encoding_new_encoding (const char *enc_name, const char *ident,
-			   const char **encoding_vec,
-			   const char *baseenc_name, int flags)
+                           const char **encoding_vec,
+                           const char *baseenc_name, int flags)
 {
   int      enc_id, code;
 
@@ -443,7 +443,7 @@ pdf_encoding_new_encoding (const char *enc_name, const char *ident,
     int baseenc_id = pdf_encoding_findresource(baseenc_name);
     if (baseenc_id < 0 || !pdf_encoding_is_predefined(baseenc_id))
       ERROR("Illegal base encoding %s for encoding %s\n",
-	    baseenc_name, encoding->enc_name);
+            baseenc_name, encoding->enc_name);
     encoding->baseenc = &enc_cache.encodings[baseenc_id];
   }
 
@@ -470,14 +470,14 @@ void pdf_encoding_complete (void)
        * we do use a base encodings for PDF versions >= 1.3.
        */
       int with_base = !(encoding->flags & FLAG_USED_BY_TYPE3)
-	              || pdf_get_version() >= 4;
+                      || pdf_get_version() >= 4;
       ASSERT(!encoding->resource);
       encoding->resource = create_encoding_resource(encoding,
-						    with_base ? encoding->baseenc : NULL);
+                                                    with_base ? encoding->baseenc : NULL);
       ASSERT(!encoding->tounicode);
       encoding->tounicode = pdf_create_ToUnicode_CMap(encoding->enc_name,
-						      encoding->glyphs,
-						      encoding->is_used);
+                                                      encoding->glyphs,
+                                                      encoding->is_used);
     }
   }
 }
@@ -683,7 +683,7 @@ pdf_create_ToUnicode_CMap (const char *enc_name,
         len = agl_sput_UTF16BE(enc_vec[code], &p, endptr, &fail_count);
         if (len >= 1 && !fail_count) {
           CMap_add_bfchar(cmap, wbuf, 1, wbuf + 1, len);
-	  all_predef &= agln && agln->is_predef;
+          all_predef &= agln && agln->is_predef;
         }
       }
     }
